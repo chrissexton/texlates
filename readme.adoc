@@ -1,0 +1,9 @@
+= texlates
+
+Templates for physical note writing.
+
+== Usage
+
+You will need a copy of xetex to execute these templates. This may also require bits of TeXLive, but I'm unsure.
+
+Run with `-help` first and be sure your startDate is sensible!
