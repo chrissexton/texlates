@@ -70,7 +70,7 @@ func class(file *os.File) {
 		info := map[string]interface{}{
 			"Courses":   strings.Split(*courses, ","),
 			"Days":      strings.Split(*courseDays, ","),
-			"DateRange": fmt.Sprintf("%s-%s", day.Format("2006/01/02"), day.Add(24*time.Hour).Format("02")),
+			"DateRange": fmt.Sprintf("%s-%s", day.Format("2006/01/02"), day.Add(48*time.Hour).Format("02")),
 			"Week":      fmt.Sprintf("Week %d", i+1),
 		}
 		check(body.Execute(file, info))
