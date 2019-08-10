@@ -74,7 +74,7 @@ func class(file *os.File) {
 			"Week":      fmt.Sprintf("Week %d", i+1),
 		}
 		check(body.Execute(file, info))
-		day = day.Add(24 * time.Hour)
+		day = day.Add(24 * 7 * time.Hour)
 	}
 	check(foot.Execute(file, nil))
 }
