@@ -7,16 +7,19 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"text/template"
 	"time"
 )
 
 var (
-	fileName  = flag.String("file", "output", "Name of output file")
-	tplPath   = flag.String("tpl", "daily", "Path to templates")
-	startDate = flag.String("start", "", "date of start (yyy-mm-dd)")
-	pages     = flag.Int("pages", 7, "number of pages")
-	debug     = flag.Bool("debug", false, "leave LaTeX log files")
+	fileName   = flag.String("file", "output", "Name of output file")
+	tplPath    = flag.String("tpl", "daily", "Path to templates")
+	startDate  = flag.String("start", "", "date of start (yyy-mm-dd)")
+	courseDays = flag.String("courseDays", "Monday,Wednesday,Other", "days for the class template")
+	courses    = flag.String("courses", "Cxxx,Cyyy,Czzz", "courses for the class template")
+	pages      = flag.Int("pages", 7, "number of pages")
+	debug      = flag.Bool("debug", false, "leave LaTeX log files")
 )
 
 func main() {
@@ -65,8 +68,8 @@ func class(file *os.File) {
 	check(head.Execute(file, nil))
 	for i := 0; i < *pages; i++ {
 		info := map[string]interface{}{
-			"Courses":   []string{"C311", "C346", "C490"},
-			"Days":      []string{"Monday", "Wednesday", "Other"},
+			"Courses":   strings.Split(*courses, ","),
+			"Days":      strings.Split(*courseDays, ","),
 			"DateRange": fmt.Sprintf("%s-%s", day.Format("2006/01/02"), day.Add(24*time.Hour).Format("02")),
 			"Week":      fmt.Sprintf("Week %d", i+1),
 		}
