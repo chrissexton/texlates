@@ -13,10 +13,12 @@ import (
 )
 
 var (
-	fileName   = flag.String("file", "output", "Name of output file")
-	tplPath    = flag.String("tpl", "daily", "Path to templates")
-	startDate  = flag.String("start", "", "date of start (yyy-mm-dd)")
+	fileName   = flag.String("file", "output", "name of output file")
+	tplPath    = flag.String("tpl", "daily", "template name")
+	startDate  = flag.String("start", "", "date of start (yyyy-mm-dd)")
 	courseDays = flag.String("courseDays", "Monday,Wednesday,Other", "days for the class template")
+	holidays   = flag.String("holidays", "", "dates (yyyy-mm-dd) comma separated of holidays")
+	course     = flag.String("course", "Cxxx", "course for lesson template")
 	courses    = flag.String("courses", "Cxxx,Cyyy,Czzz", "courses for the class template")
 	pages      = flag.Int("pages", 7, "number of pages")
 	debug      = flag.Bool("debug", false, "leave LaTeX log files")
@@ -34,6 +36,8 @@ func main() {
 		daily(tmpfile)
 	case "class":
 		class(tmpfile)
+	case "lesson":
+		lesson(tmpfile)
 	default:
 		log.Fatal("Unknown template")
 	}
@@ -42,6 +46,8 @@ func main() {
 	}
 
 	cmd := exec.Command("xelatex", "-halt-on-error", "-jobname="+*fileName, tmpfile.Name())
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stderr
 	err = cmd.Run()
 	if err != nil {
 		log.Fatal(err)
@@ -98,6 +104,51 @@ func daily(file *os.File) {
 		}
 		check(body.Execute(file, info))
 		day = day.Add(24 * time.Hour)
+	}
+	check(foot.Execute(file, nil))
+}
+
+func lesson(file *os.File) {
+	head := template.Must(template.ParseFiles("templates/lesson/head.tpl"))
+	body := template.Must(template.ParseFiles("templates/lesson/body.tpl"))
+	foot := template.Must(template.ParseFiles("templates/lesson/foot.tpl"))
+
+	hs := strings.Split(*holidays, ",")
+	holdayDates := map[time.Time]bool{}
+	for _, h := range hs {
+		if h == "" {
+			continue
+		}
+		day, err := time.Parse("2006-01-02", h)
+		check(err)
+		holdayDates[day] = true
+	}
+
+	if *startDate == "" {
+		*startDate = time.Now().Format("2006-01-02")
+	}
+	day, err := time.Parse("2006-01-02", *startDate)
+	check(err)
+
+	check(head.Execute(file, nil))
+	for i := 0; i < *pages*2; {
+		info := map[string]interface{}{
+			"Course": *course,
+			"Date":   fmt.Sprintf("%s", day.Format("2006/01/02")),
+			"Day":    fmt.Sprintf("Day %d", i+1),
+		}
+		if !holdayDates[day] {
+			check(body.Execute(file, info))
+			i++
+		}
+		day2 := day.Add(2 * 24 * time.Hour)
+		info["Date"] = fmt.Sprintf("%s", day2.Format("2006/01/02"))
+		info["Day"] = fmt.Sprintf("Day %d", i+1)
+		if !holdayDates[day2] {
+			check(body.Execute(file, info))
+			i++
+		}
+		day = day.Add(24 * 7 * time.Hour)
 	}
 	check(foot.Execute(file, nil))
 }
