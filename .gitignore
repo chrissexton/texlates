@@ -428,3 +428,4 @@ tags
 
 # End of https://www.gitignore.io/api/go,vim,osx,intellij+all,latex
 output.pdf
+texlates
