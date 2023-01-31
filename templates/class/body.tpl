@@ -13,6 +13,8 @@
 \begin{tabular}{|m{1em}|m{\colwidth}|m{\colwidth}|m{\colwidth}|@{}m{0cm}@{}}\hline
    {{range .Days}}& \centering\arraybackslash{ {{.}} } {{end}} \\\hline
    {{range .Courses}}
-   \centering\rotatebox{90}{ {{.}} } &&& \\[75mm] \hline
+   \centering\rotatebox{90}{ {{.}} } &&& \\[70mm] \hline
    {{end}}
 \end{tabular}
+
+\pagebreak

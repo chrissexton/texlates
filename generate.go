@@ -73,7 +73,7 @@ func class(file *os.File) {
 
 	check(head.Execute(file, nil))
 	for i := 0; i < *pages; i++ {
-		info := map[string]interface{}{
+		info := map[string]any{
 			"Courses":   strings.Split(*courses, ","),
 			"Days":      strings.Split(*courseDays, ","),
 			"DateRange": fmt.Sprintf("%s-%s", day.Format("2006/01/02"), day.Add(48*time.Hour).Format("02")),
@@ -98,7 +98,7 @@ func daily(file *os.File) {
 
 	check(head.Execute(file, nil))
 	for i := 0; i < *pages; i++ {
-		info := map[string]interface{}{
+		info := map[string]any{
 			"Date":      day.Format("2 Jan"),
 			"DayOfWeek": day.Format("Monday"),
 		}
@@ -132,7 +132,7 @@ func lesson(file *os.File) {
 
 	check(head.Execute(file, nil))
 	for i := 0; i < *pages*2; {
-		info := map[string]interface{}{
+		info := map[string]any{
 			"Course": *course,
 			"Date":   fmt.Sprintf("%s", day.Format("2006/01/02")),
 			"Day":    fmt.Sprintf("Day %d", i+1),
